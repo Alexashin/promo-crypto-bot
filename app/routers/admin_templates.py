@@ -197,7 +197,10 @@ async def tpl_save_media(message: Message, state: FSMContext, session) -> None:
     media_type: str | None = None
     file_id: str | None = None
 
-    if message.voice:
+    if message.audio:
+        media_type = "audio"
+        file_id = message.audio.file_id
+    elif message.voice:
         media_type = "voice"
         file_id = message.voice.file_id
     elif message.photo:
@@ -212,11 +215,8 @@ async def tpl_save_media(message: Message, state: FSMContext, session) -> None:
     elif message.video_note:
         media_type = "video_note"
         file_id = message.video_note.file_id
-
-    if not media_type or not file_id:
-        await message.answer(
-            "Не вижу медиа. Пришли voice/photo/video/document/video_note."
-        )
+    else:
+        await message.answer("Пришли аудио/voice/фото/видео/документ.")
         return
 
     await set_template_media(session, key, media_type, file_id)

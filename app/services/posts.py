@@ -135,7 +135,7 @@ async def send_template(
             )
         except TelegramBadRequest as e:
             if "VOICE_MESSAGES_FORBIDDEN" in str(e):
-                await bot.send_document(chat_id, tpl.file_id, caption="Подкаст")
+                await bot.send_message(chat_id, text="Невозможно отправить документ")
             else:
                 raise
         return

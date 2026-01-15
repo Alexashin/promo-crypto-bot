@@ -44,6 +44,7 @@ class Setting(Base):
 
 class MediaType(PyEnum):
     voice = "voice"
+    audio = "audio"
     photo = "photo"
     video = "video"
     document = "document"
