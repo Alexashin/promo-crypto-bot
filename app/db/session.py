@@ -1,26 +1,40 @@
+from __future__ import annotations
+
+from typing import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import (
-    create_async_engine,
-    async_sessionmaker,
     AsyncEngine,
     AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
 )
-
+from contextlib import asynccontextmanager
 from app.config import settings
 
-_engine: AsyncEngine | None = None
-_sessionmaker: async_sessionmaker[AsyncSession] | None = None
+engine: AsyncEngine = create_async_engine(
+    settings.database_url,
+    echo=False,
+    pool_pre_ping=True,
+)
+
+SessionFactory: async_sessionmaker[AsyncSession] = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
 
-async def init_engine() -> None:
-    global _engine, _sessionmaker
-    if _engine is None:
-        _engine = create_async_engine(
-            settings.database_url, echo=False, pool_pre_ping=True
-        )
-        _sessionmaker = async_sessionmaker(_engine, expire_on_commit=False)
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    async with SessionFactory() as session:
+        yield session
 
 
-def get_sessionmaker() -> async_sessionmaker[AsyncSession]:
-    if _sessionmaker is None:
-        raise RuntimeError("DB is not initialized. Call init_engine() first.")
-    return _sessionmaker
+@asynccontextmanager
+async def session_scope() -> AsyncGenerator[AsyncSession, None]:
+    async with SessionFactory() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise

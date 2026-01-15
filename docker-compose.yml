@@ -12,6 +12,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+  
+  adminer:
+    image: adminer
+    container_name: portal_db_adminer
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
 
   bot:
     build:
@@ -26,6 +35,8 @@ services:
     volumes:
       - ./:/app
       - ./logs:/app/logs
+  
+
 
 volumes:
   pgdata:

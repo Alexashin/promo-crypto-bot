@@ -1,5 +1,5 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     admin_ids: str = Field(default="", alias="ADMIN_IDS")
 
     database_url: str = Field(alias="DATABASE_URL")
+
+    channel_id: str = Field(alias="CHANNEL_ID")  # "@channel" или "-100..."
+    channel_url: str = Field(alias="CHANNEL_URL")  # "https://t.me/..."
 
     default_inactive_hours: int = Field(default=48, alias="DEFAULT_INACTIVE_HOURS")
     default_max_reminders: int = Field(default=5, alias="DEFAULT_MAX_REMINDERS")
