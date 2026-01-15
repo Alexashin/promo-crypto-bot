@@ -58,25 +58,25 @@ async def bot_settings(call: CallbackQuery, session) -> None:
 
     text = (
         "🤖 <b>Настройки бота</b>\n\n"
-        f"channel_id: <code>{escape(channel_id)}</code>\n"
-        f"channel_url: {escape(channel_url)}\n"
-        f"social_url: {escape(social_url)}\n"
-        f"consult_contact_name: {escape(c_name)}\n"
-        f"consult_contact_url: {escape(c_url)}\n\n"
+        f"ID канала: <code>{escape(channel_id)}</code>\n"
+        f"URL канала: {escape(channel_url)}\n"
+        f"URL соц-сети: {escape(social_url)}\n"
+        f"Имя контакта: {escape(c_name)}\n"
+        f"URL контакта: {escape(c_url)}\n\n"
         "Выбери, что изменить:"
     )
 
     kb = build_inline(
         [
-            {"text": "✏️ channel_id", "callback": "adm:edit:channel_id"},
-            {"text": "✏️ channel_url", "callback": "adm:edit:channel_url"},
-            {"text": "✏️ social_url", "callback": "adm:edit:social_url"},
+            {"text": "✏️ ID канала", "callback": "adm:edit:channel_id"},
+            {"text": "✏️ URL канала", "callback": "adm:edit:channel_url"},
+            {"text": "✏️ URL соц-сети", "callback": "adm:edit:social_url"},
             {
-                "text": "✏️ consult_contact_name",
+                "text": "✏️ Имя контакта",
                 "callback": "adm:edit:consult_contact_name",
             },
             {
-                "text": "✏️ consult_contact_url",
+                "text": "✏️ URL контакт",
                 "callback": "adm:edit:consult_contact_url",
             },
             {"text": "◀️ Назад", "callback": "adm:back"},
@@ -102,15 +102,15 @@ async def reminder_settings(call: CallbackQuery, session) -> None:
 
     text = (
         "⏰ <b>Напоминания</b>\n\n"
-        f"inactive_hours: <code>{escape(str(inactive_hours))}</code>\n"
-        f"max_reminders: <code>{escape(str(max_reminders))}</code>\n\n"
+        f"Часы неактивности: <code>{escape(str(inactive_hours))}</code>\n"
+        f"Напоминаний: <code>{escape(str(max_reminders))}</code>\n\n"
         "Выбери, что изменить:"
     )
 
     kb = build_inline(
         [
-            {"text": "✏️ inactive_hours", "callback": "adm:edit:inactive_hours"},
-            {"text": "✏️ max_reminders", "callback": "adm:edit:max_reminders"},
+            {"text": "✏️ Часы неактивности", "callback": "adm:edit:inactive_hours"},
+            {"text": "✏️ Напоминаний", "callback": "adm:edit:max_reminders"},
             {"text": "◀️ Назад", "callback": "adm:back"},
         ]
     )
@@ -134,6 +134,12 @@ async def ask_new_value(call: CallbackQuery, state: FSMContext) -> None:
         parse_mode="HTML",
         reply_markup=admin_menu_kb(),
     )
+    await call.answer()
+
+
+@router.callback_query(F.data == "adm:set:root")
+async def settings_root_cb(call: CallbackQuery) -> None:
+    await safe_edit_text(call.message, "⚙️ Настройки:", reply_markup=_settings_menu_kb())
     await call.answer()
 
 

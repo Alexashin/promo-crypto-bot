@@ -5,28 +5,33 @@ from aiogram.types import Message
 
 from app.db.models import User
 from app.services.posts import send_template
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router()
 
 
 @router.message(F.text == "🎧 Получить подкаст")
-async def menu_podcast(message: Message, db_user: User) -> None:
+async def menu_podcast(message: Message, db_user: User, session: AsyncSession) -> None:
     if not db_user.is_subscribed:
-        await send_template(message.bot, message.from_user.id, "not_subscribed")
+        await send_template(
+            message.bot, session, message.from_user.id, "not_subscribed"
+        )
     else:
-        await send_template(message.bot, message.from_user.id, "podcast_1")
+        await send_template(message.bot, session, message.from_user.id, "podcast_1")
 
 
 @router.message(F.text == "ℹ️ Узнать о соцсети")
-async def menu_social(message: Message) -> None:
-    await send_template(message.bot, message.from_user.id, "social_info_1")
+async def menu_social(message: Message, session: AsyncSession) -> None:
+    await send_template(message.bot, session, message.from_user.id, "social_info_1")
 
 
 @router.message(F.text == "👤 Получить консультацию")
-async def menu_consult(message: Message) -> None:
-    await send_template(message.bot, message.from_user.id, "consult_info")
+async def menu_consult(message: Message, session: AsyncSession) -> None:
+    await send_template(message.bot, session, message.from_user.id, "consult_info")
 
 
 @router.message(F.text == "✅ Зарегистрироваться")
-async def menu_register(message: Message) -> None:
-    await send_template(message.bot, message.from_user.id, "register_instructions")
+async def menu_register(message: Message, session: AsyncSession) -> None:
+    await send_template(
+        message.bot, session, message.from_user.id, "register_instructions"
+    )

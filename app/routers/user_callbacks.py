@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 
+
 from app.db.models import User
 from app.keyboards.reply import user_menu_kb
 from app.services.posts import send_template
@@ -31,20 +32,20 @@ async def cb_check_sub(
     try:
         subscribed = await is_user_subscribed(call.bot, session, user_id)
     except SubscribeCheckError:
-        await send_template(call.bot, user_id, "bot_not_in_channel")
+        await send_template(call.bot, session, user_id, "bot_not_in_channel")
         await call.answer()
         return
 
     db_user.is_subscribed = subscribed
 
     if not subscribed:
-        await send_template(call.bot, user_id, "not_subscribed")
+        await send_template(call.bot, session, user_id, "not_subscribed")
         await call.answer()
         return
 
     # подписан
-    await send_template(call.bot, user_id, "podcast_1")
-    await send_template(call.bot, user_id, "menu_after_podcast")
+    await send_template(call.bot, session, user_id, "podcast_1")
+    await send_template(call.bot, session, user_id, "menu_after_podcast")
     await call.bot.send_message(
         user_id,
         "Выбери действие из меню 👇",
@@ -64,9 +65,11 @@ async def cb_registered(call: CallbackQuery, db_user: User) -> None:
 
 
 @router.callback_query(F.data == "get_podcast")
-async def cb_get_podcast(call: CallbackQuery, db_user: User) -> None:
+async def cb_get_podcast(
+    call: CallbackQuery, db_user: User, session: AsyncSession
+) -> None:
     if not db_user.is_subscribed:
-        await send_template(call.bot, call.from_user.id, "not_subscribed")
+        await send_template(call.bot, session, call.from_user.id, "not_subscribed")
     else:
-        await send_template(call.bot, call.from_user.id, "podcast_1")
+        await send_template(call.bot, session, call.from_user.id, "podcast_1")
     await call.answer()

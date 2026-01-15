@@ -10,6 +10,7 @@ from app.routers.user_callbacks import router as user_callbacks_router
 from app.routers.user_menu import router as user_menu_router
 from app.routers.admin import router as admin_router
 from app.routers.admin_settings import router as admin_settings_router
+from app.routers.admin_templates import router as admin_templates_router
 
 
 def build_dispatcher() -> Dispatcher:
@@ -25,5 +26,6 @@ def build_dispatcher() -> Dispatcher:
     dp.include_router(user_menu_router)
     dp.include_router(admin_router)
     dp.include_router(admin_settings_router)
+    dp.include_router(admin_templates_router)
 
     return dp
